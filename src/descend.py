@@ -1,114 +1,91 @@
 """
-performs the descent on a starting input vector until it plateaus
+performs a step of the descent on a starting input vector
+for a given oracle
 
-Things to edit for the specific application:
-- state0.json
-- boundaries.json
-- output json files
-- S (output reference)
-- dx (discrete gradient step)
-- file (spreadsheet name)
+args
+    oracle
+    input vector
+    param bounds
 
 """
 
 import xlwings as xw
 import matplotlib.pyplot as plt
 import json
+from save_state import save_state
 
-# load workbook
-file = "RWH.xlsx"
-wb = xw.Book(file)
-ws = wb.sheets["Main"]
+# args
+oracle = "oracle.xlsx"
+in_file = "init.json"
+params_config = "params.json"
 
-# input / output json
-data_in = "s18.json"
-data_out = "state1.json"
-iterations = 5
 
-S = "K10"  # satisfaction cell reference
-# dx = 0.2  # continuous value step
+def descend(oracle, params, params_config):
 
-x_points = []
-y_points = []
+    # loads workbook
+    wb = xw.Book(oracle)
+    ws = wb.sheets[0]
 
-# define parameter boundaries
-bounds = json.load(open("boundaries.json"))
+    # defines parameter boundaries
+    bounds = json.load(open(params_config))
 
-# load initial parameters
-params = json.load(open(data_in))
-grad = ["param", "val"]  # key = CELL, value = CELL_VALUE
+    # key = CELL, value = CELL_VALUE
+    grad = list(next(iter(params.items())))
 
-for param, val in params.items():
-    grad[0] = param
-    grad[1] = val
-    ws.range(param).raw_value = val
-
-# Show the Satisfaction
-print(f"Initial Satisfaction: {ws.range(S).value * 1000 // 1 / 10}%")
-
-# iteratively calculate and apply the gradient
-for i in range(iterations):
-
-    # save the original satisfaction
-    current_sat = ws.range(S).value
+    # saves the original satisfaction
+    sat_cell = bounds["Satisfaction"]
+    current_sat = ws.range(sat_cell).value
     best_sat = current_sat
 
     for param, val in params.items():
 
         if param in bounds["Discrete"]:
 
+            # tries each option
             for opt in bounds["Discrete"][param]:
 
                 ws.range(param).raw_value = opt
-                if ws.range(S).value > best_sat:
-                    best_sat = ws.range(S).value
+                if ws.range(sat_cell).value > best_sat:
+                    best_sat = ws.range(sat_cell).value
                     grad[0] = param
                     grad[1] = opt
 
-            # reset value
+            # resets param
             ws.range(param).raw_value = val
 
         elif param in bounds["Continuous"]:
 
-            # Calculate continuous gradient
+            # gets continuous step
             dx = bounds["Continuous"][param][2]
 
-            # compare +dx, 0, and -dx
+            # compares +dx, 0, and -dx
             if val + dx <= bounds["Continuous"][param][1]:
 
                 ws.range(param).raw_value = val + dx
-                if ws.range(S).value > best_sat:
-                    best_sat = ws.range(S).value
+                if ws.range(sat_cell).value > best_sat:
+                    best_sat = ws.range(sat_cell).value
                     grad[0] = param
                     grad[1] = val + dx
 
             if val - dx >= bounds["Continuous"][param][0]:
 
                 ws.range(param).raw_value = val - dx
-                if ws.range(S).value > best_sat:
-                    best_sat = ws.range(S).value
+                if ws.range(sat_cell).value > best_sat:
+                    best_sat = ws.range(sat_cell).value
                     grad[0] = param
                     grad[1] = val - dx
 
-            # reset param
+            # resets param
             ws.range(param).raw_value = val
 
     # update ideal solution
     params[grad[0]] = grad[1]
-    print(f"\t{(grad[0], grad[1])}")
+    print(f"\t{(grad[0], grad[1])}\t{current_sat} --> {best_sat}")
     ws.range(grad[0]).raw_value = grad[1]
 
-    # Show the Satisfaction
-    print(f"Iteration {i+1}: Satisfaction: {ws.range(S).value * 1000 // 1 / 10}%")
 
-    # add data point to progress graph
-    x_points.append(i)
-    y_points.append(ws.range(S).value * 1000 // 1 / 10)
-
-# Save the parameters in a json
-with open(data_out, "w") as outfile:
-    outfile.write(json.dumps(params))
-
-# show progress plot
-plt.plot(x_points, y_points)
-plt.show()
+if __name__ == "__main__":
+    print("running descend...")
+    params = json.load(open(in_file))
+    descend(oracle, params, params_config)
+    save_state(oracle, out_file=in_file, params_config=params_config)
