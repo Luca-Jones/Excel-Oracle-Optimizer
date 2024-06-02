@@ -22,16 +22,16 @@ params_config = "params.json"
 out_file = "state1.json"
 
 
-def optimize(oracle, params_config, out_file):
-
-    # loads workbook
-    wb = xw.Book(oracle)
-    ws = wb.sheets[0]
+def optimize(oracle, params_config):
 
     # vars
     max_iterations = 10
     x_points = []
     y_points = []
+
+    # loads workbook
+    wb = xw.Book(oracle)
+    ws = wb.sheets[0]
 
     # gets params
     params = get_state(oracle, params_config)
@@ -57,14 +57,17 @@ def optimize(oracle, params_config, out_file):
         # save previous grad
         prev_grad = grad
 
-    # saves the result to file
-    save_state(oracle, params_config, out_file)
-
-    # shows progress plot
-    plt.plot(x_points, y_points)
-    plt.show()
+    return x_points, y_points
 
 
 if __name__ == "__main__":
+
     print("running optimize...")
-    optimize(oracle, params_config, out_file)
+    x, y = optimize(oracle, params_config)
+
+    # shows progress plot
+    plt.plot(x, y)
+    plt.show()
+
+    # saves the optimized params
+    save_state(oracle, params_config, out_file)
