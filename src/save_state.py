@@ -18,7 +18,7 @@ out_file = "init.json"
 params_config = "params.json"
 
 
-def save_state(oracle, out_file, params_config):
+def get_state(oracle, params_config):
 
     # loads workbook
     wb = xw.Book(oracle)
@@ -36,6 +36,14 @@ def save_state(oracle, out_file, params_config):
     for key, val in ref_params["Continuous"].items():
         params[key] = ws.range(key).value
 
+    return params
+
+
+def save_state(oracle, params_config, out_file):
+
+    # gets the current params dict from the spreadsheet
+    params = get_state(oracle, params_config)
+
     # prints params for confirmation
     print(json.dumps(params))
 
@@ -46,4 +54,4 @@ def save_state(oracle, out_file, params_config):
 
 if __name__ == "__main__":
     print("running save_state...")
-    save_state()
+    save_state(oracle, params_config, out_file)
