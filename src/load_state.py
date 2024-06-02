@@ -1,3 +1,8 @@
+"""
+loads a state json file into the oracle spreadsheet
+
+"""
+
 import xlwings as xw
 import json
 
@@ -38,7 +43,6 @@ for i in range(0):
 
 
 params = json.load(open("b10.json"))
-# json.load(open(f"s{max_index}.json"))
 
 # set all parameters to their default values
 for param, val in params.items():

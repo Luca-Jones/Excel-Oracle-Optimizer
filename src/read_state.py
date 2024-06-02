@@ -1,3 +1,9 @@
+"""
+Reads the current input vector from the oracle spreadsheet and writes
+it to a json file of choice
+
+"""
+
 import xlwings as xw
 import json
 
