@@ -1,7 +1,9 @@
 """
-We will assume that each of the parameters is roughly independent
-Thus, we will use the gradient approach.
-If it fails, we will use greedy algorithm :(
+makes many randomly generated starting input vectors and applies
+the descent to them until their output plateaus
+
+Note: it is assumed that the oracle takes an n dimensional
+input vector and outputs a number, namely the satisfaction
 
 Things to edit for the specific application:
 - state0.json
