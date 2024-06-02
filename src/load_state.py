@@ -3,7 +3,7 @@ loads an input vector from a json file into the oracle spreadsheet
 
 args:
     oracle
-    params list
+    input vector
 
 """
 
@@ -14,13 +14,21 @@ import json
 oracle = "oracle.xlsx"
 in_file = "init.json"
 
-# load workbook
-wb = xw.Book(oracle)
-ws = wb.sheets[0]
 
-# load params
-params = json.load(open(in_file))
+def load_state(oracle, in_file):
 
-# set all param values
-for key, val in params.items():
-    ws.range(key).raw_value = val
+    # loads workbook
+    wb = xw.Book(oracle)
+    ws = wb.sheets[0]
+
+    # loads params
+    params = json.load(open(in_file))
+
+    # sets all param values
+    for key, val in params.items():
+        ws.range(key).raw_value = val
+
+
+if __name__ == "__main__":
+    print("running load_state...")
+    load_state(oracle, in_file)
