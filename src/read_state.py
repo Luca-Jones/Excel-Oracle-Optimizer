@@ -1,28 +1,41 @@
 """
-Reads the current input vector from the oracle spreadsheet and writes
+Reads the current input vector from an oracle spreadsheet and writes
 it to a json file of choice
+
+args:
+    oracle
+    params list out
+    params bounds
 
 """
 
 import xlwings as xw
 import json
 
-file = "RWH.xlsx"
-range = ""
+# args
+in_file = "oracle.xlsx"
+out_file = "init.json"
+params_file = "params.json"
 
 # load workbook
-wb = xw.Book(file)
-ws = wb.sheets["Main"]
+wb = xw.Book(in_file)
+ws = wb.sheets[0]
 
+# load params dict
 params = {}
-ref = json.load(open("parameters.json"))
+ref_params = json.load(open(params_file))
 
-# set all parameters to their default values
-for param in ws.range("C2:C32"):
-    p_address = param.get_address(row_absolute=False, column_absolute=False)
-    if p_address in ref:
-        params[p_address] = param.value
+# discrete params
+for key, val in ref_params["Discrete"].items():
+    params[key] = ws.range(key).value
 
-# Save the parameters in a json
-with open("state0.json", "w") as outfile:
-    outfile.write(json.dumps(params))
+# continuous params
+for key, val in ref_params["Continuous"].items():
+    params[key] = ws.range(key).value
+
+# prints params for confirmation
+print(json.dumps(params))
+
+# saves params to a json
+with open(out_file, "w") as o:
+    o.write(json.dumps(params))
