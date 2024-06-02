@@ -83,6 +83,8 @@ def descend(oracle, params, params_config):
     print(f"\t{(grad[0], grad[1])}\t{current_sat} --> {best_sat}")
     ws.range(grad[0]).raw_value = grad[1]
 
+    return grad[0], grad[1]
+
 
 if __name__ == "__main__":
     print("running descend...")
