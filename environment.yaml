@@ -69,4 +69,6 @@ dependencies:
   - xz=5.4.6=h8cc25b3_1
   - zlib=1.2.13=h8cc25b3_1
   - zstd=1.5.5=hd43e919_2
+  - pip:
+      - randomcolor==0.4.4.6
 prefix: C:\Users\lucab\anaconda3\envs\eoo
