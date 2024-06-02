@@ -13,12 +13,12 @@ import xlwings as xw
 import json
 
 # args
-in_file = "oracle.xlsx"
+oracle = "oracle.xlsx"
 out_file = "init.json"
 params_file = "params.json"
 
 # load workbook
-wb = xw.Book(in_file)
+wb = xw.Book(oracle)
 ws = wb.sheets[0]
 
 # load params dict
