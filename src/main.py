@@ -1,100 +1,44 @@
-"""
-makes many randomly generated starting input vectors and applies
-the descent to them until their output plateaus
+from solve import solve
 
-Note: it is assumed that the oracle takes an n dimensional
-input vector and outputs a number, namely the satisfaction
+# oracle
+print("Enter the location of the oracle (Excel Spreadsheet): ")
+oracle = input()
 
-args
-    oracle
-    param bounds
-    output file
-    number of attempts
+try:
+    open(oracle)
+except:
+    print("File does not exist")
+    exit(0)
 
-"""
+# bounds
+print("Enter the location of the input boundaries json file: ")
+params_config = input()
 
-import xlwings as xw
-import matplotlib.pyplot as plt
-import json
-import randomcolor
-import random
-import time
-from optimize import optimize
+try:
+    open(params_config)
+except:
+    print("File does not exist")
+    exit(0)
 
-# args
-oracle = "oracle.xlsx"
-params_config = "params.json"
-out_file = "state1.json"
-N = 25  # number of attempts
+# output file
+print("Enter the name of the json file to save the results to: ")
+out_file = input()
 
-# vars
-best_vector = {}
-best_sat = 0
+# attempts
+print("Enter the number of attempts to optimize: ")
 
-# loads workbook
-wb = xw.Book(oracle)
-ws = wb.sheets[0]
+try:
+    N = int(input())
+except:
+    print("Please enter a number greater than 0.")
+    exit(0)
 
-# initializes the plot
-fig, axs = plt.subplots(1, 1)
-
-# gets param bounds
-bounds = json.load(open(params_config))
-
-# get satisfaction cell reference
-sat_cell = bounds["Satisfaction"]
-
-for i in range(N):
-
-    # generates random starting vector
-    while True:
-
-        params = {}
-
-        for key, vals in bounds["Discrete"].items():
-            params[key] = vals[random.randrange(0, len(vals))]
-            ws.range(key).raw_value = params[key]
-
-        for key, vals in bounds["Continuous"].items():
-            params[key] = (
-                random.choice(list(range(0, int((vals[1] - vals[0]) / vals[2]))))
-                * vals[2]
-                + vals[0]
-            )
-            ws.range(key).raw_value = params[key]
-
-        if ws.range(sat_cell).raw_value > 0:
-            break
-
-    # times this procedure
-    start_time = time.time()
-
-    # optimizes for this attempt
-    x_points, y_points = optimize(oracle, params_config)
-
-    # prints time taken
-    print(f"\tTime to complete attempt {i}: {time.time() - start_time} seconds")
-
-    # adds data to a subplot
-    axs.plot(
-        x_points,
-        y_points,
-        color=randomcolor.RandomColor().generate()[0],
+try:
+    solve(oracle, params_config, out_file, N)
+except:
+    print(
+        "Something went wrong. Please make sure that the arguments are entered correctly."
     )
+    exit(0)
 
-    # checks if it is the best
-    current_sat = ws.range(sat_cell).raw_value
-    if current_sat > best_sat:
-        best_sat = current_sat
-        best_vector = params
-
-# save results to file
-with open(out_file, "w") as o:
-    o.write(json.dumps(best_vector))
-
-# displays the plot
-plt.title(label="Satisfaction vs Iterations")
-plt.xlabel("Number of Iterations")
-plt.ylabel("Average Satisfaction")
-plt.savefig("Optimized_Satisfaction.png")
-plt.show()
+exit(0)
