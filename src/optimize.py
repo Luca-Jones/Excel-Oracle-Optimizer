@@ -17,9 +17,9 @@ from save_state import save_state
 from descend import descend
 
 # args
-oracle = "../in/oracle.xlsx"
-params_config = "../in/params.json"
-out_file = "../in/state1.json"
+oracle = "oracle.xlsx"
+params_config = "params.json"
+out_file = "state1.json"
 
 
 def optimize(oracle, params_config):

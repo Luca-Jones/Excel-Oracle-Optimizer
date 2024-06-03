@@ -11,8 +11,8 @@ import xlwings as xw
 import json
 
 # args
-oracle = "../in/oracle.xlsx"
-in_file = "../in/init.json"
+oracle = "oracle.xlsx"
+in_file = "init.json"
 
 
 def load_state(oracle, in_file):

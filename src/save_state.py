@@ -13,9 +13,9 @@ import xlwings as xw
 import json
 
 # args
-oracle = "../in/oracle.xlsx"
-out_file = "../in/init.json"
-params_config = "../in/params.json"
+oracle = "oracle.xlsx"
+out_file = "init.json"
+params_config = "params.json"
 
 
 def get_state(oracle, params_config):

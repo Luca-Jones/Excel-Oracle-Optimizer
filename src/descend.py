@@ -15,9 +15,9 @@ import json
 from save_state import save_state
 
 # args
-oracle = "../in/oracle.xlsx"
-in_file = "../in/init.json"
-params_config = "../in/params.json"
+oracle = "oracle.xlsx"
+in_file = "init.json"
+params_config = "params.json"
 
 
 def descend(oracle, params, params_config):

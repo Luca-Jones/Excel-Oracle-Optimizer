@@ -22,10 +22,10 @@ import time
 from optimize import optimize
 
 # args
-oracle = "../in/oracle.xlsx"
-params_config = "../in/params.json"
-out_file = "../in/state1.json"
-N = 25  # number of attempts
+oracle = "oracle.xlsx"
+params_config = "params.json"
+out_file = "state1.json"
+N = 5  # number of attempts
 
 
 def solve(oracle, params_config, out_file, N):
